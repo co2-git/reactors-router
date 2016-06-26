@@ -2,6 +2,9 @@ import React, {Component} from 'react';
 import {View} from 'reactors';
 
 export default class Router extends Component {
+  constructor(props) {
+    super(props);
+  }
   state = {route: null, routes: {}};
   componentWillMount() {
     const children = Array.isArray(this.props.children) ?
