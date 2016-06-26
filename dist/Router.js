@@ -78,11 +78,17 @@ var Router = function (_Component) {
       this.state.route = this.state.routes[this.props.initial];
     }
   }, {
+    key: 'go',
+    value: function go(route) {
+      console.log('go', route);
+      this.setState({ route: this.state.routes[route] });
+    }
+  }, {
     key: 'render',
     value: function render() {
       console.log({ state: this.state });
       var Route = this.state.route;
-      return _react2.default.createElement(Route, null);
+      return _react2.default.createElement(Route, { router: this });
     }
   }, {
     key: 'renderScene',
