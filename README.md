@@ -33,8 +33,8 @@ const pageB = (props) => (
 );
 
 export default (props) =>
-  <Router initial="pageA">
-    <Router.route scene={{pageA}} />
-    <Router.route scene={{pageB}} />
-  </Router>
+<Router initial="pageA">
+  <Router.route scene={{pageA}} />
+  <Router.route scene={{pageB}} />
+</Router>
 ```
