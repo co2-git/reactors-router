@@ -13,6 +13,10 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactors = require('reactors');
 
+var _reactors2 = _interopRequireDefault(_reactors);
+
+var _reactNative = require('react-native');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -51,8 +55,7 @@ var Router = function (_Component) {
             var name = _child$props.name;
 
             var title = name ? name : scene.name;
-            this.state.routes[title] = scene;
-            console.log({ title: title, scene: scene, child: child });
+            this.state.routes[title] = { name: title, scene: scene };
           }
         }
       } catch (err) {
@@ -75,20 +78,85 @@ var Router = function (_Component) {
   }, {
     key: 'go',
     value: function go(route) {
-      console.log('go', route);
       this.setState({ route: this.state.routes[route] });
     }
   }, {
     key: 'render',
     value: function render() {
-      console.log({ state: this.state });
-      var Route = this.state.route;
-      return _react2.default.createElement(Route, { router: this });
+      return this.renderScenery();
     }
   }, {
-    key: 'renderScene',
-    value: function renderScene() {
-      // const routes
+    key: 'renderScenery',
+    value: function renderScenery() {
+      switch (_reactors2.default.platform) {
+        case 'mobile':
+          return this.renderMobileScenery();
+        case 'web':
+        case 'desktop':
+          return this.renderWebScenery();
+      }
+    }
+  }, {
+    key: 'renderMobileScenery',
+    value: function renderMobileScenery() {
+      var routes = [];
+      for (var name in this.state.routes) {
+        var _Route = this.state.routes[name].scene;
+
+        var _Dimensions$get = _reactNative.Dimensions.get('window');
+
+        var width = _Dimensions$get.width;
+        var height = _Dimensions$get.height;
+
+        var style = {
+          height: height,
+          width: width,
+          marginLeft: name === this.state.route.name ? 0 : width
+        };
+        if (name !== this.state.route.name) {
+          style.marginTop = -style.height;
+        } else {
+          style.marginTop = 0;
+        }
+        routes.push(_react2.default.createElement(
+          _reactors.View,
+          { style: style, key: name },
+          _react2.default.createElement(_Route, { router: this })
+        ));
+      }
+      return _react2.default.createElement(
+        _reactors.View,
+        null,
+        routes
+      );
+    }
+  }, {
+    key: 'renderWebScenery',
+    value: function renderWebScenery() {
+      var routes = [];
+      for (var name in this.state.routes) {
+        var _Route2 = this.state.routes[name].scene;
+        var style = {
+          height: window.innerHeight,
+          width: window.innerWidth,
+          marginLeft: name === this.state.route.name ? 0 : window.innerWidth
+        };
+        if (name !== this.state.route.name) {
+          style.marginTop = -style.height;
+        } else {
+          style.marginTop = 0;
+        }
+        routes.push(_react2.default.createElement(
+          _reactors.View,
+          { style: style, key: name },
+          _react2.default.createElement(_Route2, { router: this })
+        ));
+      }
+      return _react2.default.createElement(
+        _reactors.View,
+        null,
+        routes
+      );
     }
   }]);
 
