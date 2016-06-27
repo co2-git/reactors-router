@@ -32,7 +32,7 @@ const pageB = (props) => (
   </View>
 );
 
-export default (props) =>
+export default () =>
 <Router initial="pageA">
   <Router.route scene={{pageA}} />
   <Router.route scene={{pageB}} />
