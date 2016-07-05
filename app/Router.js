@@ -1,95 +1,161 @@
-import React, {Component} from 'react';
-import Reactors, {View, Text} from 'reactors';
-import {Dimensions} from 'react-native';
+// @flow
+// globals window
 
-export default class Router extends Component {
-  constructor(props) {
-    super(props);
+import React, {Component, Element} from 'react';
+import {Dimensions as RNDimensions} from 'react-native';
+import Reactors, {View, StyleSheet} from 'reactors';
+import _ from 'lodash';
+
+class Dimensions {
+  static get(name: string) {
+    if (Reactors.platform === 'mobile') {
+      return RNDimensions.get('window');
+    }
+    return {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
   }
-  state = {route: null, routes: {}};
+}
+
+type ROUTE = {
+  name: string,
+  scene: Element,
+  mounted: boolean,
+  current: boolean,
+};
+
+const styles = StyleSheet.create({
+  route: {},
+  routes: {
+    flexDirection: 'row',
+    transition: 'transform 1s',
+  }
+});
+
+type RULE = {
+  name?: string,
+  scene: Element,
+}
+
+function Rule(props: RULE): View {
+  return <View {...props} />;
+}
+
+type ROUTE_PROPS = {
+  route: ROUTE,
+  router: Router,
+};
+
+function Route(props: ROUTE_PROPS): View {
+  const {route, router} = props;
+  const Scene = route.scene;
+  return (
+    <View
+      style={{
+        ...styles.route,
+        ...Dimensions.get('window'),
+      }}
+      >
+      <Scene router={router} />
+    </View>
+  );
+}
+
+type ROUTES_PROPS = {
+  routes: Array<ROUTE>,
+  router: Router,
+};
+
+function Routes(props: ROUTES_PROPS): View {
+  const {width} = Dimensions.get('window');
+  const cursor = _.findIndex(props.routes, 'current') || 0;
+  const mounted = _.filter(props.routes, {mounted: true});
+  return (
+    <View style={{
+        ...styles.routes,
+        width: width * mounted.length,
+        transform: `translateX(-${width * cursor}px)`
+      }}>
+      {
+        props.routes
+          .filter(route => route.mounted)
+          .map(route =>
+            <Route
+              key={route.name}
+              route={route}
+              router={props.router}
+              />
+          )
+      }
+    </View>
+  );
+}
+
+export
+type ROUTER_PROPS = {
+  children: Rule|Array<Rule>,
+  initial: string,
+};
+
+export
+type STATE = {
+  routes: Array<ROUTE>,
+};
+
+class Router extends Component {
+  props: ROUTER_PROPS;
+  state: STATE = {routes: []};
   componentWillMount() {
     const children = Array.isArray(this.props.children) ?
       this.props.children : [this.props.children];
+
     for (const child of children) {
-      if (child.type === Route) {
-        const {scene, name} = child.props;
-        const title = name ? name : scene.name;
-        this.state.routes[title] = {name: title, scene};
+      if (child.type === Rule) {
+        const {scene} = child.props;
+        const name = child.props.name ? child.props.name : scene.name;
+        this.state.routes.push({
+          name,
+          scene,
+          mounted: name === this.props.initial,
+          current: name === this.props.initial,
+        });
       }
     }
-    this.state.route = this.state.routes[this.props.initial];
   }
-  go(route) {
-    this.setState({route: this.state.routes[route]});
+  go(name: string) {
+    this.setState({
+      routes: this.state.routes.map(route => {
+        if (route.name === name) {
+          route.mounted = true;
+          route.current = true;
+        } else {
+          route.current = false;
+        }
+        return route;
+      }),
+    });
+  }
+  getCurrentRouteName(): ?string {
+    return _.reduce(this.state.routes,
+      (name: string, route: ROUTE) => {
+        if (route.current) {
+          name = route.name;
+        }
+        return name;
+      },
+      null
+    );
   }
   render() {
-    return this.renderScenery();
-  }
-  renderScenery() {
-    switch (Reactors.platform) {
-    case 'mobile':
-      return this.renderMobileScenery();
-    case 'web':
-    case 'desktop':
-      return this.renderWebScenery();
-    }
-  }
-  renderMobileScenery() {
-    const routes = [];
-    for (const name in this.state.routes) {
-      const Route = this.state.routes[name].scene;
-      const {width, height} = Dimensions.get('window');
-      const style = {
-        height,
-        width,
-        marginLeft: name === this.state.route.name ? 0 : width,
-      };
-      if (name !== this.state.route.name) {
-        style.marginTop = -style.height;
-      } else {
-        style.marginTop = 0;
-      }
-      routes.push(
-        <View style={style} key={name}>
-          <Route router={this} />
-        </View>
-      );
-    }
     return (
-      <View>
-        {routes}
-      </View>
-    );
-  }
-  renderWebScenery() {
-    const routes = [];
-    for (const name in this.state.routes) {
-      const Route = this.state.routes[name].scene;
-      const style = {
-        height: window.innerHeight,
-        width: window.innerWidth,
-        marginLeft: name === this.state.route.name ? 0 : window.innerWidth,
-      };
-      if (name !== this.state.route.name) {
-        style.marginTop = -style.height;
-      } else {
-        style.marginTop = 0;
-      }
-      routes.push(
-        <View style={style} key={name}>
-          <Route router={this} />
-        </View>
-      );
-    }
-    return (
-      <View>
-        {routes}
-      </View>
+      <Routes
+        routes={this.state.routes}
+        router={this}
+        />
     );
   }
 }
 
-
-export const Route = (props) => {
-  return <View {...props} />;
-}
+export default Router;
+export {Rule as Route};

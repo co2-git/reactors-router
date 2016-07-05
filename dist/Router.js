@@ -25,6 +25,17 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var width = void 0,
+    height = void 0;
+if (_reactors2.default.platform === 'mobile') {
+  var dimensions = _reactNative.Dimensions.get('window');
+  width = dimensions.width;
+  height = dimensions.height;
+} else {
+  width = window.innerWidth;
+  height = window.innerHeight;
+}
+
 var Router = function (_Component) {
   _inherits(Router, _Component);
 
@@ -55,7 +66,11 @@ var Router = function (_Component) {
             var name = _child$props.name;
 
             var title = name ? name : scene.name;
-            this.state.routes[title] = { name: title, scene: scene };
+            this.state.routes[title] = {
+              name: title,
+              scene: scene,
+              mounted: title === this.props.initial
+            };
           }
         }
       } catch (err) {
@@ -77,8 +92,10 @@ var Router = function (_Component) {
     }
   }, {
     key: 'go',
-    value: function go(route) {
-      this.setState({ route: this.state.routes[route] });
+    value: function go(route_name) {
+      var route = this.state.routes[route_name];
+      route.mounted = true;
+      this.setState({ route: route, routes: this.state.routes });
     }
   }, {
     key: 'render',
@@ -88,73 +105,26 @@ var Router = function (_Component) {
   }, {
     key: 'renderScenery',
     value: function renderScenery() {
-      switch (_reactors2.default.platform) {
-        case 'mobile':
-          return this.renderMobileScenery();
-        case 'web':
-        case 'desktop':
-          return this.renderWebScenery();
-      }
-    }
-  }, {
-    key: 'renderMobileScenery',
-    value: function renderMobileScenery() {
+      console.log(window.innerHeight);
       var routes = [];
       for (var name in this.state.routes) {
-        var _Route = this.state.routes[name].scene;
-
-        var _Dimensions$get = _reactNative.Dimensions.get('window');
-
-        var width = _Dimensions$get.width;
-        var height = _Dimensions$get.height;
-
-        var style = {
-          height: height,
-          width: width,
-          marginLeft: name === this.state.route.name ? 0 : width
-        };
-        if (name !== this.state.route.name) {
-          style.marginTop = -style.height;
-        } else {
-          style.marginTop = 0;
+        if (this.state.routes[name].mounted) {
+          var _Route = this.state.routes[name].scene;
+          var style = {
+            height: height,
+            width: width,
+            order: name === this.state.route.name ? 1 : 2
+          };
+          routes.push(_react2.default.createElement(
+            _reactors.View,
+            { style: style, key: name, id: name },
+            _react2.default.createElement(_Route, { router: this })
+          ));
         }
-        routes.push(_react2.default.createElement(
-          _reactors.View,
-          { style: style, key: name },
-          _react2.default.createElement(_Route, { router: this })
-        ));
       }
       return _react2.default.createElement(
         _reactors.View,
-        null,
-        routes
-      );
-    }
-  }, {
-    key: 'renderWebScenery',
-    value: function renderWebScenery() {
-      var routes = [];
-      for (var name in this.state.routes) {
-        var _Route2 = this.state.routes[name].scene;
-        var style = {
-          height: window.innerHeight,
-          width: window.innerWidth,
-          marginLeft: name === this.state.route.name ? 0 : window.innerWidth
-        };
-        if (name !== this.state.route.name) {
-          style.marginTop = -style.height;
-        } else {
-          style.marginTop = 0;
-        }
-        routes.push(_react2.default.createElement(
-          _reactors.View,
-          { style: style, key: name },
-          _react2.default.createElement(_Route2, { router: this })
-        ));
-      }
-      return _react2.default.createElement(
-        _reactors.View,
-        null,
+        { style: styles.scenery },
         routes
       );
     }
@@ -167,3 +137,18 @@ exports.default = Router;
 var Route = exports.Route = function Route(props) {
   return _react2.default.createElement(_reactors.View, props);
 };
+
+var _styles = {
+  scenery: {
+    flexDirection: 'column',
+    overflow: 'hidden',
+    border: '2px solid red',
+    height: window.innerHeight
+  }
+};
+
+if (_reactors2.default.platform === 'web' || _reactors2.default.platform === 'desktop') {
+  _styles.scenery.overflow = 'hidden';
+}
+
+var styles = _reactors.StyleSheet.create(_styles);
