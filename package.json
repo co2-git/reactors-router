@@ -2,11 +2,11 @@
   "name": "reactors-router",
   "version": "0.0.2",
   "description": "",
-  "main": "dist/Router.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "babel": "babel --out-dir dist/ app/",
-    "babel-watch": "babel --watch --out-dir dist/ app/"
+    "babel": "babel --out-dir dist/ src/",
+    "babel-watch": "babel --watch --out-dir dist/ src/"
   },
   "author": "",
   "license": "ISC",
