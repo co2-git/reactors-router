@@ -21,11 +21,13 @@ export default class Router extends Component {
       if (child.type === Rule) {
         const {scene} = child.props;
         const name = child.props.name ? child.props.name : scene.name;
+        const initial = _.isString(this.props.initial) ? this.props.initial
+          : (this.props.initial.displayName || this.props.initial.name);
         this.state.routes.push({
           name,
           scene,
-          mounted: name === this.props.initial,
-          current: name === this.props.initial,
+          mounted: name === initial,
+          current: name === initial,
         });
       }
     }
