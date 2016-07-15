@@ -32,9 +32,12 @@ const pageB = (props) => (
   </View>
 );
 
-export default () =>
-<Router initial="pageA">
-  <Router.route scene={pageA} name="pageA" />
-  <Router.route scene={pageB} name="pageB" />
-</Router>
+export default function App() {
+  return (
+    <Router initial={pageA}>
+      <Router.route scene={pageA} />
+      <Router.route scene={pageB} />
+    </Router>
+  );
+}
 ```
