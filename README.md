@@ -15,7 +15,7 @@ npm install --save reactors-router
 
 ```javascript
 import React from 'react';
-import Router from 'reactors-router';
+import Router, {Route} from 'reactors-router';
 import {View, Text} from 'reactors';
 
 const pageA = (props) => (
@@ -35,8 +35,8 @@ const pageB = (props) => (
 export default function App() {
   return (
     <Router initial={pageA}>
-      <Router.route scene={pageA} />
-      <Router.route scene={pageB} />
+      <Route scene={pageA} />
+      <Route scene={pageB} />
     </Router>
   );
 }
