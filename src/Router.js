@@ -16,20 +16,34 @@ export default class Router extends Component {
   componentWillMount() {
     const children = Array.isArray(this.props.children) ?
       this.props.children : [this.props.children];
+    let initial;
+
+    if (this.props.initial) {
+      if ( _.isString(this.props.initial)) {
+        initial = this.props.initial;
+      } else if (_.isFunction(this.props.initial)) {
+        initial = this.props.initial.name;
+      }
+    }
 
     for (const child of children) {
-      if (child.type === Rule) {
-        const {scene} = child.props;
-        const name = child.props.name ? child.props.name : scene.name;
-        const initial = _.isString(this.props.initial) ? this.props.initial
-          : (this.props.initial.displayName || this.props.initial.name);
-        this.state.routes.push({
-          name,
-          scene,
-          mounted: name === initial,
-          current: name === initial,
-        });
+      if (child) {
+        if (child.type === Rule) {
+          const {scene} = child.props;
+          const name = child.props.name ? child.props.name : scene.name;
+          this.state.routes.push({
+            name,
+            scene,
+            mounted: Boolean(initial && name && name === initial),
+            current: Boolean(initial && name && name === initial),
+          });
+        }
       }
+    }
+
+    if (!initial && this.state.routes.length) {
+      this.state.routes[0].mounted = true;
+      this.state.routes[0].current = true;
     }
   }
   go(name: string) {
