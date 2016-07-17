@@ -1,7 +1,7 @@
 // @flow
 import React, {Component} from 'react';
 import {Animated} from 'react-native';
-import Reactors, {View, Text} from 'reactors';
+import Reactors from 'reactors';
 import _ from 'lodash';
 import Dimensions from './Dimensions';
 import Rule from './Rule';
@@ -27,7 +27,7 @@ export default class Router extends Component {
     let initial;
 
     if (this.props.initial) {
-      if ( _.isString(this.props.initial)) {
+      if (_.isString(this.props.initial)) {
         initial = this.props.initial;
       } else if (_.isFunction(this.props.initial)) {
         initial = this.props.initial.name;
