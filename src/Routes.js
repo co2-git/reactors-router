@@ -17,7 +17,8 @@ export default function Routes(props: ROUTES_PROPS): View {
   };
   if (Reactors.platform === 'mobile') {
     return (
-      <Animated.View style={{
+      <Animated.View
+        style={{
           ...style,
           transform: [{translateX: props.left}],
         }}>
@@ -36,7 +37,8 @@ export default function Routes(props: ROUTES_PROPS): View {
     );
   }
   return (
-    <View style={{
+    <View
+      style={{
         ...style,
         transition: 'transform 1s',
         transform: [{translateX: (-width * cursor) + 'px'}],

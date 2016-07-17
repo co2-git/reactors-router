@@ -2,6 +2,7 @@
 import Rule from './Rule';
 import Router from './Router';
 import {Animated} from 'react-native';
+import {Element} from 'react';
 
 export
 type ROUTE = {
