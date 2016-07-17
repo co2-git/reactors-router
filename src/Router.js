@@ -9,11 +9,19 @@ import Routes from './Routes';
 import type {ROUTER_PROPS, STATE, ROUTE} from './types';
 
 export default class Router extends Component {
+  static routers: Array<Router> = [];
   props: ROUTER_PROPS;
   state: STATE = {routes: []};
   left: ?Animated.Value =
     Reactors.platform === 'mobile' && new Animated.Value(0);
   componentWillMount() {
+    Router.routers.push(this);
+    if (this.props.name) {
+      Object.defineProperty(Router.routers, this.props.name, {
+        enumerable: false,
+        value: this,
+      });
+    }
     const children = Array.isArray(this.props.children) ?
       this.props.children : [this.props.children];
     let initial;
