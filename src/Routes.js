@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import {Animated} from 'react-native';
-import Reactors, {View, StyleRule} from 'reactors';
+import Reactors, {View} from 'reactors';
 import _ from 'lodash';
 import Dimensions from './Dimensions';
 import Route from './Route';
