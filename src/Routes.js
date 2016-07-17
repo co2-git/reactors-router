@@ -39,7 +39,7 @@ export default function Routes(props: ROUTES_PROPS): View {
     <View style={{
         ...style,
         transition: 'transform 1s',
-        transform: [{translateX: -width * cursor}],
+        transform: [{translateX: (-width * cursor) + 'px'}],
       }}>
       {
         props.routes
