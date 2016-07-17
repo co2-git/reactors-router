@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import {Animated} from 'react-native';
-import Reactors, {View} from 'reactors';
+import Reactors, {View, StyleRule} from 'reactors';
 import _ from 'lodash';
 import Dimensions from './Dimensions';
 import Route from './Route';
@@ -39,7 +39,7 @@ export default function Routes(props: ROUTES_PROPS): View {
     <View style={{
         ...style,
         transition: 'transform 1s',
-        transform: [{translateX: -width * cursor}],
+        transform: [{translateX: (-width * cursor) + 'px'}],
       }}>
       {
         props.routes
