@@ -7,8 +7,13 @@ export default function Route(props: ROUTE_PROPS): View {
   const {route, router} = props;
   const Scene = route.scene;
   return (
-    <View>
-      <Scene router={router} />
+    <View
+      style={{
+        width: props.width,
+        height: props.height,
+      }}
+      >
+      <Scene router={router} {...route.props} {...props.extraProps} />
     </View>
   );
 }

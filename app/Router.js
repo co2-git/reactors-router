@@ -1,19 +1,27 @@
 // @flow
 import React, {Component} from 'react';
-import {Animated} from 'react-native';
-import Reactors from 'reactors';
+import Reactors, {Dimensions} from 'reactors';
 import _ from 'lodash';
-import Dimensions from './Dimensions';
 import Rule from './Rule';
 import Routes from './Routes';
-import type {ROUTER_PROPS, STATE, ROUTE} from './types';
+
+const MOBILE = Reactors.platform === 'mobile';
+// const WEB = Reactors.platform === 'web';
+// const DESKTOP = Reactors.platform === 'desktop';
+
+let Animated;
+
+if (MOBILE) {
+  const {Animated: RNAnimated} = require('react-native');
+  Animated = RNAnimated;
+}
 
 export default class Router extends Component {
   static routers: Array<Router> = [];
-  props: ROUTER_PROPS;
-  state: STATE = {routes: []};
-  left: ?Animated.Value =
-    Reactors.platform === 'mobile' && new Animated.Value(0);
+  props: $Reactors$Router$Router$props;
+  state: $Reactors$Router$State = {routes: [], props: {}};
+  left: ?Animated.Value = MOBILE && new Animated.Value(0);
+
   componentWillMount() {
     Router.routers.push(this);
     if (this.props.name) {
@@ -30,7 +38,7 @@ export default class Router extends Component {
       if (_.isString(this.props.initial)) {
         initial = this.props.initial;
       } else if (_.isFunction(this.props.initial)) {
-        initial = this.props.initial.name;
+        initial = this.props.initial.displayName || this.props.initial.name;
       }
     }
 
@@ -38,10 +46,18 @@ export default class Router extends Component {
       if (child) {
         if (child.type === Rule) {
           const {scene} = child.props;
-          const name = child.props.name ? child.props.name : scene.name;
+          let name;
+          if (child.props.name) {
+            name = child.props.name;
+          } else if (scene.displayName) {
+            name = scene.displayName;
+          } else {
+            name = scene.name;
+          }
           this.state.routes.push({
             name,
             scene,
+            props: child.props.props,
             mounted: Boolean(initial && name && name === initial),
             current: Boolean(initial && name && name === initial),
           });
@@ -54,7 +70,8 @@ export default class Router extends Component {
       this.state.routes[0].current = true;
     }
   }
-  go(name: string) {
+
+  go(name: string, extraProps: Object = {}) {
     this.setState({
       routes: this.state.routes.map(route => {
         if (route.name === name) {
@@ -65,29 +82,38 @@ export default class Router extends Component {
         }
         return route;
       }),
+      props: extraProps,
     });
-    if (Reactors.platform === 'mobile') {
+    if (MOBILE) {
       const cursor = _.findIndex(this.state.routes, 'current') || 0;
       const {width} = Dimensions.get('window');
       Animated.spring(this.left, {toValue: -width * cursor}).start();
     }
   }
+
   getCurrentRouteName(): ?string {
     return _.reduce(this.state.routes,
-      (name: string, route: ROUTE) => {
+      (name: string, route: $Reactors$Route) => {
+        let _name = name;
         if (route.current) {
-          name = route.name;
+          _name = route.name;
         }
-        return name;
+        return _name;
       },
       null
     );
   }
+
   render() {
+    if (!this.props.width) {
+      throw new Error('reactors-router: Missing width attribute');
+    }
     return (
       <Routes
         routes={this.state.routes}
+        extraProps={this.state.props}
         router={this}
+        width={this.props.width}
         left={this.left}
         />
     );

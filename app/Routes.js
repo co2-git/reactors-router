@@ -1,21 +1,26 @@
 // @flow
 import React from 'react';
-import {Animated} from 'react-native';
 import Reactors, {View} from 'reactors';
 import _ from 'lodash';
-import Dimensions from './Dimensions';
 import Route from './Route';
-import type {ROUTES_PROPS} from './types';
 
-export default function Routes(props: ROUTES_PROPS): View {
-  const {width} = Dimensions.get('window');
+const MOBILE = Reactors.platform === 'mobile';
+
+let Animated;
+
+if (MOBILE) {
+  const {Animated: RNAnimated} = require('react-native');
+  Animated = RNAnimated;
+}
+
+export default function Routes(props: $Reactors$Routes$props): View {
+  const {width} = props;
   const cursor = _.findIndex(props.routes, 'current') || 0;
-  const mounted = _.filter(props.routes, {mounted: true});
   const style = {
     flexDirection: 'row',
-    width: (width * mounted.length) - 1,
+    width: (width * props.routes.length) - 1,
   };
-  if (Reactors.platform === 'mobile') {
+  if (MOBILE) {
     return (
       <Animated.View
         style={{
@@ -45,14 +50,24 @@ export default function Routes(props: ROUTES_PROPS): View {
       }}>
       {
         props.routes
-          .filter(route => route.mounted)
-          .map(route =>
-            <Route
+          .map(route => {
+            if (route.mounted) {
+              return <Route
+                key={route.name}
+                route={route}
+                router={props.router}
+                extraProps={props.extraProps}
+                width={props.width}
+                />;
+            }
+            return <View
               key={route.name}
-              route={route}
-              router={props.router}
-              />
-          )
+              style={{
+                width: props.width,
+                height: props.height,
+              }}
+              />;
+          })
       }
     </View>
   );
