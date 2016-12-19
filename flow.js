@@ -5,7 +5,7 @@ import {Animated} from 'react-native';
 import {Element} from 'react';
 
 export
-type ROUTE = {
+type $Reactors$Route = {
   name: string,
   scene: Element,
   mounted: boolean,
@@ -19,25 +19,26 @@ type RULE = {
 };
 
 export
-type ROUTE_PROPS = {
-  route: ROUTE,
+type $Reactors$Router$Route$props = {
+  route: $Reactors$Route,
   router: Router,
 };
 
 export
-type ROUTES_PROPS = {
-  routes: Array<ROUTE>,
+type $Reactors$Routes$props = {
+  routes: $Reactors$Route[],
   router: Router,
   left?: Animated.Value,
 };
 
 export
-type ROUTER_PROPS = {
+type $Reactors$Router$Router$props = {
   children: Rule|Array<Rule>,
   initial: string,
 };
 
 export
-type STATE = {
-  routes: Array<ROUTE>,
+type $Reactors$Router$State = {
+  routes: $Reactors$Route[],
+  props: Object,
 };
