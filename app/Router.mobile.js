@@ -45,10 +45,10 @@ export default class ReactorsRouterMobile extends Component {
     return Navigator.SceneConfigs.HorizontalSwipeJump;
   }
 
-  renderScene(route: $route) {
+  renderScene(route: $route, navigator) {
     return (
       <route.scene
-        navigator={this.navigator}
+        navigator={navigator}
         routes={this.props.routes}
         route={route}
         router={this}
