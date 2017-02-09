@@ -1,7 +1,7 @@
 {
   "name": "reactors-router",
-  "version": "0.1.0",
-  "description": "",
+  "version": "0.2.0",
+  "description": "Router for reactors",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -21,6 +21,6 @@
     "eslint-plugin-react-native": "^1.1.0"
   },
   "dependencies": {
-    "lodash": "^4.13.1"
+    "lodash": "^4.17.4"
   }
 }
