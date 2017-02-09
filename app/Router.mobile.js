@@ -53,6 +53,7 @@ export default class ReactorsRouterMobile extends Component {
         route={route}
         router={this}
         showIndicator={this.showIndicator}
+        changed={this.state.changed}        
         />
     );
   }
