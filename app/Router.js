@@ -16,6 +16,12 @@ export default class ReactorsRouter extends Component {
       return <ReactorsRouterMobile {...props} />;
     }
 
+    case 'web':
+    case 'desktop': {
+      const ReactorsRouterDOM = require('./Router.dom').default;
+      return <ReactorsRouterDOM {...props} />;
+    }
+
     }
   }
 }

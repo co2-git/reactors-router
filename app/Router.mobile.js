@@ -14,11 +14,15 @@ type $route = {
 type $routes = $route[];
 
 type $props = {
+  onDidFocus?: Function,
+  onWillFocus?: Function,
   routes: $routes,
 };
 
 export default class ReactorsRouterMobile extends Component {
   props: $props;
+
+  state = {changed: 0};
 
   navigator;
 
@@ -80,13 +84,26 @@ export default class ReactorsRouterMobile extends Component {
     }
   }
 
+  reload() {
+    this.setState({changed: this.state.changed + 1});
+  }
+
   render() {
     const {routes} = this.props;
     return (
       <Navigator
         initialRoute={routes[0]}
         configureScene={this.configureScene.bind(this)}
-        onDidFocus={this.onDidFocus}
+        onDidFocus={(route) => {
+          if (typeof this.props.onDidFocus === 'function') {
+            this.props.onDidFocus(route, this);
+          }
+        }}
+        onWillFocus={(route) => {
+          if (typeof this.props.onWillFocus === 'function') {
+            this.props.onWillFocus(route, this);
+          }
+        }}
         ref={(nav) => {
           this.navigator = nav;
         }}
