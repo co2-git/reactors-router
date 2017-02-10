@@ -48,11 +48,7 @@ export default class ReactorsRouterMobile extends Component {
   renderScene(route: $route) {
     return (
       <route.scene
-        navigator={this.navigator}
-        routes={this.props.routes}
-        route={route}
         router={this}
-        showIndicator={this.showIndicator}
         />
     );
   }

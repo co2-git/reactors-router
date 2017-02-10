@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Router, Route} from 'react-router';
+import {View} from 'reactors';
 
 type $route = {
   title: string,
@@ -16,6 +17,17 @@ type $props = {
   routes: $routes,
 };
 
+class Foo extends Component {
+  render() {
+    return (
+      <div>
+        <span>Foo</span>
+        {this.props.children}
+      </div>
+    );
+  }
+}
+
 export default class ReactorsRouterDOM extends Component {
   props: $props;
 
@@ -23,10 +35,12 @@ export default class ReactorsRouterDOM extends Component {
     const {routes} = this.props;
     return (
       <Router>
-        <Route
-          path="/"
-          component={routes[0].scene}
-          />
+        <Route component={View}>
+          <Route
+            path="/"
+            component={View}
+            />
+        </Route>
       </Router>
     );
   }
