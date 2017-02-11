@@ -22,6 +22,8 @@ type $props = {
 export default class ReactorsRouterMobile extends Component {
   props: $props;
 
+  route: $route;
+
   state = {changed: 0};
 
   navigator;
@@ -91,6 +93,7 @@ export default class ReactorsRouterMobile extends Component {
         initialRoute={routes[0]}
         configureScene={this.configureScene.bind(this)}
         onDidFocus={(route) => {
+          this.route = route;
           if (typeof this.props.onDidFocus === 'function') {
             this.props.onDidFocus(route, this);
           }

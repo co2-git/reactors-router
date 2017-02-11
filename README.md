@@ -18,23 +18,36 @@ import React from 'react';
 import Router from 'reactors-router';
 import {View, Text} from 'reactors';
 
-const pageA = (props) => (
-  <View>
-    <Text>Page A</Text>
-    <Text onPress={() => props.router.go('pageB')}>Go to Page B</Text>
-  </View>
+function PageA({router}) (
+  return (
+    <View>
+      <Text>Page A</Text>
+      <Text onPress={() => router.go('B')}>Go to Page B</Text>
+    </View>
+  );
 );
 
-const pageB = (props) => (
-  <View>
-    <Text>Page B</Text>
-    <Text onPress={() => props.router.go('pageA')}>Go to Page A</Text>
-  </View>
+function PageB({router}) (
+  return (
+    <View>
+      <Text>Page B</Text>
+      <Text onPress={() => router.go('A')}>Go to Page A</Text>
+    </View>
+  );
+);
+
+function NotFound() (
+  return (
+    <View>
+      <Text>Not Found</Text>
+    </View>
+  );
 );
 
 const routes = [
-  {title: 'pageA', scene: pageA},
-  {title: 'pageB', scene: pageB},
+  {title: 'A', scene: PageA},
+  {title: 'B', scene: PageB},
+  {title: 'NotFound', scene: NotFound},
 ]
 
 export default function App() {

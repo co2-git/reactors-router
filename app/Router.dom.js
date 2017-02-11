@@ -1,6 +1,11 @@
 import React, {Component} from 'react';
-import {Router, Route} from 'react-router';
-import {View} from 'reactors';
+import {
+  Dimensions,
+  StyleSheet,
+  View,
+} from 'reactors';
+import findIndex from 'lodash/findIndex';
+import pick from 'lodash/pick';
 
 type $route = {
   title: string,
@@ -17,31 +22,84 @@ type $props = {
   routes: $routes,
 };
 
-class Foo extends Component {
-  render() {
-    return (
-      <div>
-        <span>Foo</span>
-        {this.props.children}
-      </div>
-    );
-  }
-}
-
 export default class ReactorsRouterDOM extends Component {
   props: $props;
 
+  state = {
+    routes: this.props.routes.map((route, index) => {
+      if (index === 0) {
+        route.loaded = true;
+      }
+      return route;
+    }),
+    routeIndex: 0,
+  };
+
+  constructor(props: $props) {
+    super(props);
+  }
+
+  go(routeTitle) {
+    let routeIndex = findIndex(this.state.routes, {title: routeTitle});
+
+    if (routeIndex === -1 && this.props.notFound) {
+      console.warn(`ReactorsRouter: Could not find ${routeTitle}`);
+      routeIndex = findIndex(this.state.routes, {title: this.props.notFound});
+      if (routeIndex === -1) {
+        console.warn(
+          `ReactorsRouter: Could not find not found ${this.props.notFound}`
+        );
+      }
+    }
+
+    if (routeIndex > -1) {
+      this.setState({
+        routeIndex,
+        routes: this.state.routes.map((route, index) => {
+          if (index === routeIndex) {
+            route.loaded = true;
+          }
+          return route;
+        }),
+      });
+    }
+  }
+
   render() {
-    const {routes} = this.props;
+    const {width} = Dimensions.get('window');
     return (
-      <Router>
-        <Route component={View}>
-          <Route
-            path="/"
-            component={View}
-            />
-        </Route>
-      </Router>
+      <View
+        style={[
+          styles.container,
+          {transform: `translateX(-${width * this.state.routeIndex}px)`},
+        ]}
+        >
+        {
+          this.state.routes.map((route) => {
+            if (route.loaded) {
+              return (
+                <View key={route.index} style={styles.scene}>
+                  <route.scene router={this} />
+                </View>
+              );
+            }
+            return <View key={route.index} />;
+          })
+        }
+      </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    ...pick(Dimensions.get('window'), ['width', 'height']),
+    display: 'flex',
+    transition: 'transform 1s',
+  },
+  scene: {
+    ...pick(Dimensions.get('window'), ['width', 'height']),
+    flexGrow: 2,
+    flexShrink: 0,
+  },
+});
