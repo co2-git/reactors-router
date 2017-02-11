@@ -60,25 +60,41 @@ export default class ReactorsRouterMobile extends Component {
     const routesInStack = this.navigator.getCurrentRoutes();
 
     // Find matching route by title
-    const routeByTitle: $route = find(this.props.routes, {title});
+    let routeByTitle: ?$route = find(this.props.routes, {title});
 
     if (!routeByTitle) {
-      throw new Error(`Route not found: ${title}`);
+      console.warn(`ReactorsRouter: Could not find ${title}`);
+
+      if (this.props.notFound) {
+        routeByTitle = find(this.props.routes, {
+          title: this.props.notFound,
+        });
+
+        if (!routeByTitle) {
+          console.warn(
+            `ReactorsRouter: Could not find not found ${this.props.notFound}`
+          );
+        }
+      } else {
+        console.warn('ReactorsRouter: No not found page found');
+      }
     }
 
-    // Determine if route already in stack
-    const routeExistsInStack: boolean =
-      routesInStack.some(
-        (singleRoute) => singleRoute.title === title,
-      );
+    if (routeByTitle) {
+      // Determine if route already in stack
+      const routeExistsInStack: boolean =
+        routesInStack.some(
+          (singleRoute) => singleRoute.title === title,
+        );
 
-    // If route in stack, jump to it
-    if (routeExistsInStack) {
-      this.navigator.jumpTo(routeByTitle);
+      // If route in stack, jump to it
+      if (routeExistsInStack) {
+        this.navigator.jumpTo(routeByTitle);
 
-    // Otherwise, push it to stack
-    } else {
-      this.navigator.push(routeByTitle);
+      // Otherwise, push it to stack
+      } else {
+        this.navigator.push(routeByTitle);
+      }
     }
   }
 

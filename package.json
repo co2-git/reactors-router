@@ -1,6 +1,6 @@
 {
   "name": "reactors-router",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "description": "Router for reactors",
   "main": "dist/index.js",
   "scripts": {

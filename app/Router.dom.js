@@ -44,11 +44,15 @@ export default class ReactorsRouterDOM extends Component {
 
     if (routeIndex === -1 && this.props.notFound) {
       console.warn(`ReactorsRouter: Could not find ${routeTitle}`);
-      routeIndex = findIndex(this.state.routes, {title: this.props.notFound});
-      if (routeIndex === -1) {
-        console.warn(
-          `ReactorsRouter: Could not find not found ${this.props.notFound}`
-        );
+      if (this.props.notFound) {
+        routeIndex = findIndex(this.state.routes, {title: this.props.notFound});
+        if (routeIndex === -1) {
+          console.warn(
+            `ReactorsRouter: Could not find not found ${this.props.notFound}`
+          );
+        }
+      } else {
+        console.warn('ReactorsRouter: No not found page found');
       }
     }
 
