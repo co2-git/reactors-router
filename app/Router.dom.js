@@ -1,3 +1,4 @@
+/* globals history location window */
 import React, {Component} from 'react';
 import {
   Dimensions,
@@ -6,6 +7,7 @@ import {
 } from 'reactors';
 import findIndex from 'lodash/findIndex';
 import pick from 'lodash/pick';
+import escapeRegExp from 'lodash/escapeRegExp';
 
 type $route = {
   title: string,
@@ -25,6 +27,8 @@ type $props = {
 export default class ReactorsRouterDOM extends Component {
   props: $props;
 
+  base = this.props.base || '/';
+
   state = {
     routes: this.props.routes.map((route, index) => {
       if (index === 0) {
@@ -35,17 +39,45 @@ export default class ReactorsRouterDOM extends Component {
     routeIndex: 0,
   };
 
-  constructor(props: $props) {
-    super(props);
+  componentWillMount() {
+    const regex = new RegExp(`^${escapeRegExp(this.base)}`);
+    const route = location.pathname.replace(regex, '');
+    const current = this.state.routes[this.state.routeIndex].path;
+    if (route !== current) {
+      this._go('path', route);
+    } else {
+      this.pushState();
+    }
+  }
+
+  componentDidMount() {
+    window.onpopstate = (event) => {
+      console.log({event});
+    };
+  }
+
+  componentDidUpdate() {
+    this.pushState();
+  }
+
+  pushState(path = this.state.routes[this.state.routeIndex].path) {
+    window.history.pushState(null, null, path);
   }
 
   go(routeTitle) {
-    let routeIndex = findIndex(this.state.routes, {title: routeTitle});
+    this._go('title', routeTitle);
+  }
+
+  _go(attr, routeTitle) {
+    let routeIndex = findIndex(this.state.routes, {[attr]: routeTitle});
 
     if (routeIndex === -1 && this.props.notFound) {
       console.warn(`ReactorsRouter: Could not find ${routeTitle}`);
       if (this.props.notFound) {
-        routeIndex = findIndex(this.state.routes, {title: this.props.notFound});
+        routeIndex = findIndex(
+          this.state.routes,
+          {[attr]: this.props.notFound},
+        );
         if (routeIndex === -1) {
           console.warn(
             `ReactorsRouter: Could not find not found ${this.props.notFound}`
