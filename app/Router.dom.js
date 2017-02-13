@@ -1,4 +1,4 @@
-/* globals history location window */
+/* globals location window */
 import React, {Component} from 'react';
 import {
   Dimensions,
@@ -6,7 +6,6 @@ import {
   View,
 } from 'reactors';
 import findIndex from 'lodash/findIndex';
-import pick from 'lodash/pick';
 import escapeRegExp from 'lodash/escapeRegExp';
 
 type $route = {
@@ -37,7 +36,15 @@ export default class ReactorsRouterDOM extends Component {
       return route;
     }),
     routeIndex: 0,
+    resized: 0,
   };
+
+  constructor(props: $props) {
+    super(props);
+    Dimensions.onResize(() => {
+      this.setState({resized: this.state.resized + 1});
+    });
+  }
 
   componentWillMount() {
     this.adjust();
@@ -55,7 +62,6 @@ export default class ReactorsRouterDOM extends Component {
     const regex = new RegExp(`^${escapeRegExp(this.base)}`);
     const route = location.pathname.replace(regex, '') || '/';
     const current = this.state.routes[this.state.routeIndex].path;
-    console.log({route, current}, this);
     if (route !== current) {
       this._go('path', route);
     } else {
@@ -105,19 +111,27 @@ export default class ReactorsRouterDOM extends Component {
   }
 
   render() {
-    const {width} = Dimensions.get('window');
+    const {width, height} = Dimensions.get('window');
     return (
       <View
         style={[
           styles.container,
           {transform: `translateX(-${width * this.state.routeIndex}px)`},
+          {width, height},
         ]}
         >
         {
           this.state.routes.map((route) => {
             if (route.loaded) {
               return (
-                <View key={route.index} style={styles.scene}>
+                <View
+                  key={route.index}
+                  style={{
+                    ...styles.scene,
+                    width,
+                    height,
+                  }}
+                  >
                   <route.scene router={this} />
                 </View>
               );
@@ -132,12 +146,10 @@ export default class ReactorsRouterDOM extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    ...pick(Dimensions.get('window'), ['width', 'height']),
     display: 'flex',
     transition: 'transform 1s',
   },
   scene: {
-    ...pick(Dimensions.get('window'), ['width', 'height']),
     flexGrow: 2,
     flexShrink: 0,
   },
