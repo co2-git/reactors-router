@@ -40,24 +40,27 @@ export default class ReactorsRouterDOM extends Component {
   };
 
   componentWillMount() {
+    this.adjust();
+  }
+
+  componentDidMount() {
+    window.onpopstate = this.adjust.bind(this);
+  }
+
+  componentDidUpdate() {
+    this.pushState();
+  }
+
+  adjust() {
     const regex = new RegExp(`^${escapeRegExp(this.base)}`);
-    const route = location.pathname.replace(regex, '');
+    const route = location.pathname.replace(regex, '') || '/';
     const current = this.state.routes[this.state.routeIndex].path;
+    console.log({route, current}, this);
     if (route !== current) {
       this._go('path', route);
     } else {
       this.pushState();
     }
-  }
-
-  componentDidMount() {
-    window.onpopstate = (event) => {
-      console.log({event});
-    };
-  }
-
-  componentDidUpdate() {
-    this.pushState();
   }
 
   pushState(path = this.state.routes[this.state.routeIndex].path) {
