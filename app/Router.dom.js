@@ -63,7 +63,7 @@ export default class ReactorsRouterDOM extends Component {
     const route = location.pathname.replace(regex, '') || '/';
     const current = this.state.routes[this.state.routeIndex].path;
     if (route !== current) {
-      this._go('path', route);
+      this._go('path', `/${route}`);
     } else {
       this.pushState();
     }
