@@ -120,7 +120,9 @@ export default class ReactorsRouterMobile extends Component {
           }
         }}
         ref={(nav) => {
-          this.navigator = nav;
+          if (!this.navigator) {
+            this.navigator = nav;
+          }
         }}
         renderScene={this.renderScene.bind(this)}
         />

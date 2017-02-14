@@ -24,6 +24,13 @@ type $props = {
 };
 
 export default class ReactorsRouterDOM extends Component {
+  static getCurrentRoute(base = '/') {
+    // Get a regex version of path base
+    const regex = new RegExp(`^${escapeRegExp(base)}`);
+    // Get current route from location using path base
+    return location.pathname.replace(regex, '') || base;
+  }
+
   props: $props;
 
   base = this.props.base || '/';
@@ -39,32 +46,33 @@ export default class ReactorsRouterDOM extends Component {
     resized: 0,
   };
 
-  constructor(props: $props) {
-    super(props);
+  componentWillMount() {
+    // Ask app to set its state from current location
+    this.setStateFromLocation();
+    // React on user hitting the back button
+    window.onpopstate = this.setStateFromLocation.bind(this);
+    // React on window being resized
     Dimensions.onResize(() => {
       this.setState({resized: this.state.resized + 1});
     });
   }
 
-  componentWillMount() {
-    this.adjust();
-  }
-
-  componentDidMount() {
-    window.onpopstate = this.adjust.bind(this);
-  }
-
   componentDidUpdate() {
+    // Update location to reflect current app state
     this.pushState();
   }
 
-  adjust() {
-    const regex = new RegExp(`^${escapeRegExp(this.base)}`);
-    const route = location.pathname.replace(regex, '') || '/';
-    const current = this.state.routes[this.state.routeIndex].path;
-    if (route !== current) {
-      this._go('path', `/${route}`);
+  setStateFromLocation() {
+    // Get current route from location using path base
+    const currentRoute = ReactorsRouterDOM.getCurrentRoute(this.base);
+    // Get expected route from state
+    const expectedRoute = this.state.routes[this.state.routeIndex].path;
+    // If current route is not the same than expected route
+    // then current route takes precedence over expected route
+    if (expectedRoute !== currentRoute) {
+      this._go('path', `${this.base}${currentRoute}`);
     } else {
+      // otherwise
       this.pushState();
     }
   }
