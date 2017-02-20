@@ -79,7 +79,7 @@ export default class ReactorsRouterDOM extends Component {
       if (routeIndex === -1) {
         this._go('path', -1);
       } else {
-        this._go('path', this.state.routes[routeIndex].path, params);
+        this._go('title', this.state.routes[routeIndex].title, params);
       }
     } else {
       // otherwise
@@ -100,7 +100,7 @@ export default class ReactorsRouterDOM extends Component {
       if (parsedUrl !== null) {
         const values = parsedUrl.slice(1, keys.length + 1);
         for (let i = 0; i < keys.length; i++) {
-          params[keys[i].name] = values[i];
+          params[keys[i].name] = decodeURIComponent(values[i]);
         }
         return true;
       }
