@@ -154,11 +154,20 @@ export default class ReactorsRouterDOM extends Component {
 
   render() {
     const {width, height} = Dimensions.get('window');
+    let transitionXPosition = 0;
+    for (var i = 0; i < this.state.routes.length; i++) {
+      if(this.state.routes[i].index === this.state.routeIndex) {
+        break;
+      }
+      if (this.state.routes[i].loaded === true) {
+        transitionXPosition++;
+      }
+    }
     return (
       <View
         style={[
           styles.container,
-          {transform: `translateX(-${width * this.state.routeIndex}px)`},
+          {transform: `translateX(-${width * transitionXPosition}px)`},
           {width, height},
         ]}
         >
