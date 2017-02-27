@@ -98,6 +98,10 @@ export default class ReactorsRouterMobile extends Component {
     }
   }
 
+  pop() {
+    return this.navigator.pop();
+  }
+
   reload() {
     this.setState({changed: this.state.changed + 1});
   }
