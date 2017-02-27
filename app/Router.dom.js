@@ -7,6 +7,7 @@ import {
 } from 'reactors';
 import findIndex from 'lodash/findIndex';
 import escapeRegExp from 'lodash/escapeRegExp';
+import pathToRegexp from 'path-to-regexp';
 
 type $route = {
   title: string,
@@ -28,7 +29,11 @@ export default class ReactorsRouterDOM extends Component {
     // Get a regex version of path base
     const regex = new RegExp(`^${escapeRegExp(base)}`);
     // Get current route from location using path base
-    return location.pathname.replace(regex, '') || base;
+    let url = location.pathname.replace(regex, '') || base;
+    if (url[0] !== '/') {
+      url = `/${url}`;
+    }
+    return url;
   }
 
   props: $props;
@@ -70,24 +75,52 @@ export default class ReactorsRouterDOM extends Component {
     // If current route is not the same than expected route
     // then current route takes precedence over expected route
     if (expectedRoute !== currentRoute) {
-      this._go('path', `${this.base}${currentRoute}`);
+      const {routeIndex, params} = this.getCurrentRouteFromUrl(currentRoute);
+      if (routeIndex === -1) {
+        this._go('path', -1);
+      } else {
+        this._go('title', this.state.routes[routeIndex].title, params);
+      }
     } else {
       // otherwise
       this.pushState();
     }
   }
 
+  getCurrentRouteFromUrl(currentRoute) {
+    let params = {};
+    // Let's find the current index
+    let routeIndex = findIndex(this.state.routes, (route) => {
+      let keys = [];
+      // parse our path into regexp
+      const re = pathToRegexp(route.path, keys);
+      // now compare with current route
+      let parsedUrl = re.exec(currentRoute);
+      // let's parse the params
+      if (parsedUrl !== null) {
+        const values = parsedUrl.slice(1, keys.length + 1);
+        for (let i = 0; i < keys.length; i++) {
+          params[keys[i].name] = decodeURIComponent(values[i]);
+        }
+        return true;
+      }
+    });
+    return {routeIndex, params};
+  }
+
   pushState(path = this.state.routes[this.state.routeIndex].path) {
-    window.history.pushState(null, null, path);
+    const currentRoute = this.state.routes[this.state.routeIndex];
+    // populate url with params
+    const toPath = pathToRegexp.compile(path)
+    window.history.pushState(null, null, toPath(currentRoute.params));
   }
 
-  go(routeTitle) {
-    this._go('title', routeTitle);
+  go(routeTitle, params = {}) {
+    this._go('title', routeTitle, params);
   }
 
-  _go(attr, routeTitle) {
+  _go(attr, routeTitle, params = {}) {
     let routeIndex = findIndex(this.state.routes, {[attr]: routeTitle});
-
     if (routeIndex === -1 && this.props.notFound) {
       console.warn(`ReactorsRouter: Could not find ${routeTitle}`);
       if (this.props.notFound) {
@@ -112,6 +145,7 @@ export default class ReactorsRouterDOM extends Component {
           if (index === routeIndex) {
             route.loaded = true;
           }
+          route.params = params;
           return route;
         }),
       });
@@ -120,11 +154,20 @@ export default class ReactorsRouterDOM extends Component {
 
   render() {
     const {width, height} = Dimensions.get('window');
+    let transitionXPosition = 0;
+    for (var i = 0; i < this.state.routes.length; i++) {
+      if(this.state.routes[i].index === this.state.routeIndex) {
+        break;
+      }
+      if (this.state.routes[i].loaded === true) {
+        transitionXPosition++;
+      }
+    }
     return (
       <View
         style={[
           styles.container,
-          {transform: `translateX(-${width * this.state.routeIndex}px)`},
+          {transform: `translateX(-${width * transitionXPosition}px)`},
           {width, height},
         ]}
         >
@@ -140,7 +183,7 @@ export default class ReactorsRouterDOM extends Component {
                     height,
                   }}
                   >
-                  <route.scene router={this} />
+                  <route.scene router={this} params={route.params} />
                 </View>
               );
             }

@@ -55,7 +55,7 @@ export default class ReactorsRouterMobile extends Component {
     );
   }
 
-  go(title: string) {
+  go(title: string, params = {}) {
     // All the current routes in stack
     const routesInStack = this.navigator.getCurrentRoutes();
 
