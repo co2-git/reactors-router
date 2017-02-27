@@ -111,7 +111,7 @@ export default class ReactorsRouterDOM extends Component {
   pushState(path = this.state.routes[this.state.routeIndex].path) {
     const currentRoute = this.state.routes[this.state.routeIndex];
     // populate url with params
-    const toPath = pathToRegexp.compile(path)
+    const toPath = pathToRegexp.compile(path);
     window.history.pushState(null, null, toPath(currentRoute.params));
   }
 
@@ -155,14 +155,19 @@ export default class ReactorsRouterDOM extends Component {
   render() {
     const {width, height} = Dimensions.get('window');
     let transitionXPosition = 0;
-    for (var i = 0; i < this.state.routes.length; i++) {
-      if(this.state.routes[i].index === this.state.routeIndex) {
+    for (let i = 0; i < this.state.routes.length; i++) {
+      if (this.state.routes[i].index === this.state.routeIndex) {
         break;
       }
       if (this.state.routes[i].loaded === true) {
         transitionXPosition++;
       }
     }
+    const sceneStyle = {
+      ...styles.scene,
+      width,
+      height,
+    };
     return (
       <View
         style={[
@@ -172,23 +177,11 @@ export default class ReactorsRouterDOM extends Component {
         ]}
         >
         {
-          this.state.routes.map((route) => {
-            if (route.loaded) {
-              return (
-                <View
-                  key={route.index}
-                  style={{
-                    ...styles.scene,
-                    width,
-                    height,
-                  }}
-                  >
-                  <route.scene router={this} params={route.params} />
-                </View>
-              );
-            }
-            return <View key={route.index} />;
-          })
+          this.state.routes.map((route) => (
+            <View key={route.index} style={sceneStyle}>
+              {route.loaded && <route.scene router={this} />}
+            </View>
+          ))
         }
       </View>
     );
