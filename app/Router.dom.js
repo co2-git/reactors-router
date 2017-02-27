@@ -75,7 +75,7 @@ export default class ReactorsRouterDOM extends Component {
     // If current route is not the same than expected route
     // then current route takes precedence over expected route
     if (expectedRoute !== currentRoute) {
-      const {routeIndex, params} = this.getcurrentRouteFromUrl(currentRoute);
+      const {routeIndex, params} = this.getCurrentRouteFromUrl(currentRoute);
       if (routeIndex === -1) {
         this._go('path', -1);
       } else {
@@ -87,7 +87,7 @@ export default class ReactorsRouterDOM extends Component {
     }
   }
 
-  getcurrentRouteFromUrl(currentRoute) {
+  getCurrentRouteFromUrl(currentRoute) {
     let params = {};
     // Let's find the current index
     let routeIndex = findIndex(this.state.routes, (route) => {
