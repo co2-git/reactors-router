@@ -8,7 +8,7 @@ Reactors is a framework based on React to build hybrid apps that run web, mobile
 # Install
 
 ```bash
-yarn add reactors-router
+yarn add react reactors reactors-router
 ```
 
 # Usage
