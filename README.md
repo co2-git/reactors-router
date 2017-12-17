@@ -8,51 +8,34 @@ Reactors is a framework based on React to build hybrid apps that run web, mobile
 # Install
 
 ```bash
-npm install --save reactors-router
+yarn add reactors-router
 ```
 
 # Usage
 
-```javascript
+```jsx
 import React from 'react';
 import Router from 'reactors-router';
 import {View, Text} from 'reactors';
 
-function PageA({router}) (
-  return (
-    <View>
-      <Text>Page A</Text>
-      <Text onPress={() => router.go('B')}>Go to Page B</Text>
-    </View>
-  );
-);
-
-function PageB({router}) (
-  return (
-    <View>
-      <Text>Page B</Text>
-      <Text onPress={() => router.go('A')}>Go to Page A</Text>
-    </View>
-  );
-);
-
-function NotFound() (
-  return (
-    <View>
-      <Text>Not Found</Text>
-    </View>
-  );
-);
-
-const routes = [
-  {title: 'A', scene: PageA},
-  {title: 'B', scene: PageB},
-  {title: 'NotFound', scene: NotFound},
-]
-
 export default function App() {
   return (
-    <Router routes={routes} />
+    <Router name="main" width={400} height={500}>
+      <Router.Route name="page-a">
+        <View>
+          <Text>Page A</Text>
+          <Text onPress={() => Router.get('main').go('page-b')}>Go to page B</Text>
+        </View>
+      </Router.Route>
+      <Router.Route name="page-b">
+        <View>
+          <Text>Page B</Text>
+          <Text onPress={() => Router.get('main').go('page-a')}>Go to page A</Text>
+        </View>
+      </Router.Route>
+    </Router>
   );
 }
 ```
+
+You can have as many routers as you want (included nested), provided you give them a name.
