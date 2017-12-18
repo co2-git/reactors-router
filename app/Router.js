@@ -43,8 +43,7 @@ export default class ReactorsRouter extends PureComponent {
   constructor(props) {
     super(props);
     this.name = props.name;
-    ReactorsRouter.routers = reject(ReactorsRouter.routers, {name: this.name});
-    ReactorsRouter.routers.push(this);
+    ReactorsRouter.routers[this.name] = this;
   }
 
   state = ReactorsRouter.makeState(this.props);

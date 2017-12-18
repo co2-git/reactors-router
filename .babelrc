@@ -1,8 +1,13 @@
 {
-  "presets": ["es2015","react","stage-0"],
+  "presets": [
+    "env",
+    "react",
+    "stage-0"
+  ],
   "plugins": [
-    "transform-flow-strip-types",
-    "syntax-async-functions",
-    "transform-regenerator"
+    "transform-class-properties",
+    "transform-decorators",
+    "transform-react-constant-elements",
+    "transform-react-inline-elements"
   ]
 }
