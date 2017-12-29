@@ -1,10 +1,7 @@
 import React, {PureComponent} from 'react';
-import Reactors, {Text, View} from 'reactors';
-import {Row} from 'reactors-grid';
-import find from 'lodash/find';
-import findIndex from 'lodash/findIndex';
+import {View} from 'reactors';
+import {Row} from 'reactors-flex';
 import first from 'lodash/first';
-import reject from 'lodash/reject';
 
 import Route from './Route';
 

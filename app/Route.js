@@ -5,7 +5,11 @@ export default class Route extends PureComponent {
   render = () => (
     <View
       style={[
-        {width: this.props.width, height: this.props.height, overflow: 'hidden'},
+        {
+          width: this.props.width,
+          height: this.props.height,
+          overflow: 'hidden',
+        },
       ]}
     >
       {this.props.children}
