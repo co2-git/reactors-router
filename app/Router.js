@@ -1,6 +1,5 @@
 import React, {PureComponent} from 'react';
-import {View} from 'reactors';
-import {Row} from 'reactors-flex';
+import {Animated, View} from 'reactors';
 import first from 'lodash/first';
 
 import Route from './Route';
@@ -54,34 +53,50 @@ export default class ReactorsRouter extends PureComponent {
     }
     this.setState(nextState);
   };
-
-  render = () => {
-    const current = ReactorsRouter.getRoute(this.state.current, this.state.routes);
-    const index = current ? current.index : 0;
-    return (
-      <View style={{width: this.props.width, height: this.props.height, overflow: 'hidden'}}>
-        <Row
-          style={[
-            {width: this.props.width * this.state.routes.length, height: this.props.height},
-            {transform: `translateX(-${this.props.width * index}px)`, transition: 'transform 1s'}
-          ]}
-        >
-          {React.Children.toArray(this.props.children).map(child => ({
-            ...child,
-            props: {
-              ...child.props,
-              width: this.props.width,
-            }
-          }))}
-        </Row>
-      </View>
+  componentDidUpdate = () => {
+    const current = ReactorsRouter.getRoute(
+      this.state.current,
+      this.state.routes,
     );
-  }
+    const index = current ? current.index : 0;
+    Animated.timing(this.offsetX, {toValue: -(this.props.width * index)}).start();
+  };
+
+  render = () => (
+    <View
+      style={{
+        height: this.props.height,
+        overflow: 'hidden',
+        width: this.props.width,
+      }}
+    >
+      <Animated
+        style={{
+          flexDirection: 'row',
+          height: this.props.height,
+          transform: [{translateX: this.offsetX}],
+          // transition: 'transform 1s',
+          width: this.props.width * this.state.routes.length,
+        }}
+      >
+        {React.Children.toArray(this.props.children).map(child => ({
+          ...child,
+          props: {
+            ...child.props,
+            width: this.props.width,
+          }
+        }))}
+      </Animated>
+    </View>
+  );
+
+  offsetX = new Animated.Value(0);
+
   getCurrentRoute = () => this.state.current;
   getHeight = () => this.props.height;
   getWidth = () => this.props.width;
+  go = (routeName, cb) => this.setState({current: routeName}, cb);
   hasRoute = (routeName) => this.state.routes.some(
     route => route.props.name === routeName
   );
-  go = (routeName, cb) => this.setState({current: routeName}, cb);
 }
